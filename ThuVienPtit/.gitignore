@@ -1,0 +1,43 @@
+﻿# Build Folders
+bin/
+obj/
+Debug/
+Release/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider files (nếu dùng JetBrains Rider)
+.idea/
+
+# NuGet packages
+*.nupkg
+packages/
+*.snupkg
+
+# Visual Studio Code
+.vscode/
+
+# ASP.NET Core
+wwwroot/lib/
+
+# Files created by popular Visual Studio add-ons
+TestResults/
+_ReSharper*/
+*.DotSettings.user
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Others
+*.swp
+*.DS_Store
+appsetting.json
+appsettings.json
+appsettings.Development.json
