@@ -1,10 +1,13 @@
 # 🛡️ ThuVienPtit - Hệ thống Quản lý Tài liệu Số Repository: ```https://github.com/yukki2004/ThuVienPtitPub.git```
-ThuVienPtit là nền tảng số hóa tài liệu dành cho Khoa Viễn Thông, giúp sinh viên và giảng viên dễ dàng chia sẻ, lưu trữ và tìm kiếm tài liệu học tập. Hệ thống được xây dựng trên nền tảng công nghệ hiện đại (Clean Architecture, .NET 9), đảm bảo hiệu năng cao và bảo mật chặt chẽ.
+ThuVienPtit là một hệ thống quản lý tài liệu số dành cho Khoa Viễn Thông, được xây dựng với Clean Architecture chuẩn mực, tách biệt hoàn toàn giữa nghiệp vụ cốt lõi và hạ tầng công nghệ, giúp backend dễ bảo trì, mở rộng và test unit.
+Hệ thống có workflow upload – duyệt – publish – soft delete – restore – hard delete, đảm bảo quản lý vòng đời tài liệu chặt chẽ. Mỗi chức năng đều được thiết kế theo CQRS, với các Command xử lý ghi, Query xử lý đọc, đảm bảo hiệu năng và khả năng mở rộng.
+Về bảo mật và xác thực, hệ thống hỗ trợ đa kênh (Local + Google OAuth), JWT token với cơ chế Access/Refresh, cùng phân quyền RBAC giúp kiểm soát truy cập API cực kỳ chi tiết. Hơn nữa, backend sử dụng Redis caching cho dữ liệu ít thay đổi, tối ưu tốc độ truy vấn và giảm tải database.
+Toàn bộ backend chạy trên .NET 9 Web API, kết nối PostgreSQL và file storage ngoài, được container hóa bằng Docker, đảm bảo triển khai nhanh, an toàn và dễ scale.
 # 🌟 Chức năng & Nghiệp vụ (Key Features)
 ## 1. Quản lý Tài khoản & Xác thực (Identity & Auth)
 - Đăng nhập đa kênh: Hỗ trợ đăng nhập Local (Email/Pass) và Google OAuth
 - Cơ chế Token nâng cao:
-   - Access Token: Ngắn hạn, dùng để gọi API.
+   - Access Token: Ngắn hạn, dùng để gọi API xác thực người dùng.
    - Refresh Token: Dài hạn, lưu trữ an toàn trong Database.
 - Phân quyền (RBAC): Admin (Quản trị viên) và User (Sinh viên/Giảng viên).
 - Bảo mật API: Middleware bảo vệ Endpoint, chỉ cho phép user có quyền truy cập.
@@ -12,6 +15,7 @@ ThuVienPtit là nền tảng số hóa tài liệu dành cho Khoa Viễn Thông,
 - Upload tài liệu: Sinh viên đăng tải tài liệu (PDF, Ảnh...).
 - Quy trình Duyệt: Tài liệu mới sẽ ở trạng thái Pending. Admin duyệt (Approve) mới được hiển thị công khai.
 - Tương tác: Xem chi tiết, Tải xuống tài liệu.
+- Xem tài liêu: User có thể xem tài liệu đã duyệt và đang chờ duyệt của bản thân, admin toàn quyền.
 - Quản lý vòng đời: Chỉnh sửa thông tin, Xóa mềm (Soft Delete) (đưa vào thùng rác), Khôi phục hoặc Xóa vĩnh viễn
 - Các chức năng CORS liên quan đến khóa học, tag như thêm sửa xóa.
 ## 3. Nghiệp vụ Nâng cao
@@ -55,12 +59,13 @@ ThuVienPtit/
 └── appsettings.json                # Cấu hình kết nối DB, Redis, Email...
 ```
 # 🚀 Hướng dẫn Cài đặt & Triển khai (Installation)
+## Triển khai với Docker
 - Bước 1: Clone Mã nguồn
 ```
 git clone https://github.com/yukki2004/ThuVienPtitPub.git
 cd ThuVienPtitPub
 ```
-- Bước 2: build image Docker
+- Bước 2: Build image Docker
 ```
 # Vào thư mục backend chứa Dockerfile
 cd ThuVienPtit
@@ -120,7 +125,7 @@ services:
 docker-compose up -d
 ```
 Hệ thống sẽ tự động Build Backend, thiết lập môi trường và khởi chạy.
-# 👨‍💻 Hướng dẫn Chạy Thủ công (Manual Dev)
+## Triển khai thủ công (Manual Dev)
 1. Build Backend (.NET)
 ```
 # Vào thư mục Backend
