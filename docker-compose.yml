@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    image: 
+    container_name: thuvien_backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      # --- KẾT NỐI DATABASE ---
+      # Dùng IP 172.17.0.1 để gọi ra Host
+      # Dùng Port 5433 (đúng như bạn yêu cầu)
+      - ConnectionStrings__DefaultConnection=Host=172.17.0.1;Port=5433;Database=faculty_docs;Username=postgres;Password=yukki2004;
+      # --- CẤU HÌNH FILE ---
+      # RootPath: Đường dẫn ảo trong container (Code C# ghi vào đây)
+      - FileStorage__RootPath=/app/files_storage
+      # BaseUrl: Phải dùng tên miền api mà ta vừa cấu hình Nginx
+      - FileStorage__BaseUrl=http://api.thuvienptit.com/files
+
+      - Redis__Host=
+      - Redis__Port=
+      - Redis__Password=
+      - Redis__Ssl=
+      - Jwt__Key=MyUltraSuperSecretKey_1234567890!!###
+      - Jwt__Issuer=MyAuthServer
+      - Jwt__Audience=MyAppUsers
+      # --- EMAIL ---
+      - EmailSettings__SmtpServer=
+      - EmailSettings__SmtpPort=587
+      - EmailSettings__SenderName=
+      - EmailSettings__SenderEmail=
+      - EmailSettings__Username=
+      - EmailSettings__Password=
+
+    volumes:
+      - /var/www/thuvienptit/storage/ThuVienPtit:/app/files_storage
