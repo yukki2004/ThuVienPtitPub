@@ -30,7 +30,20 @@ namespace ThuVienPtit.Src.Application.Users.Command
             var newAccessToken = jwtTokenService.GenerateToken(user);
             var newRefreshToken = jwtTokenService.GenerateRefreshToken();
             tokenEntity.revoked = true;
-            await refreshTokenRepository.MarkAsUsedAsync(tokenEntity);
+            if (tokenEntity.expires_at.Kind == DateTimeKind.Unspecified)
+    {
+        tokenEntity.expires_at = DateTime.SpecifyKind(tokenEntity.expires_at, DateTimeKind.Utc);
+    }
+    
+    if (tokenEntity.created_at.Kind == DateTimeKind.Unspecified) // Nếu bạn có trường created_at
+    {
+        tokenEntity.created_at = DateTime.SpecifyKind(tokenEntity.created_at, DateTimeKind.Utc);
+    }
+
+    // Nếu entity có trường RevokedAt (thời điểm thu hồi), hãy gán luôn tại đây:
+    // tokenEntity.revoked_at = DateTime.UtcNow; 
+
+    await refreshTokenRepository.MarkAsUsedAsync(tokenEntity);
             var newTokenEntity = new refresh_tokens
             {
                 token_id = Guid.NewGuid(),

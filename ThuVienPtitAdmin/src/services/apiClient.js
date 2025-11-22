@@ -3,7 +3,7 @@ import { setTokens, getAccessToken, getRefreshToken, removeTokens } from "../unt
 import { refreshTokenApi } from "./userService.js";
 import { getTokenExpiry } from "../untils/jwt.js";
 const api = axios.create({
-  baseURL: "https://localhost:7188/api",
+  baseURL: "http://api.thuvienptit.com/api",
   timeout: 80000,
 });
 let isRefreshing = false;

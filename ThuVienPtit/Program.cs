@@ -110,19 +110,14 @@ namespace ThuVienPtit
             // CORS giúp kết nối fontend
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowFrontend", policy =>
+                options.AddPolicy("AllowAll", policy =>
                 {
-                    policy.WithOrigins("http://172.11.202.246:5173", "http://localhost:5173","http://172.11.200.237:5173", "http://192.168.0.101:5173", "http://172.11.124.161:5173", "http://172.22.112.1:5173", "http://172.11.125.106:5173")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .AllowCredentials();
+                    policy.SetIsOriginAllowed(origin => true)
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 });
             });
-
-
-
             // builder các service
-
             builder.Services.AddControllers();
             builder.Services.AddAuthorization();
             builder.Services.AddHttpContextAccessor();
@@ -144,19 +139,19 @@ namespace ThuVienPtit
                     Description = "Nhập token theo dạng: Bearer {your JWT token}"
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
             builder.Services.Configure<FormOptions>(options =>
             {
@@ -168,47 +163,17 @@ namespace ThuVienPtit
             {
                 options.Limits.MaxRequestBodySize = 5L * 1024 * 1024 * 1024;
             });
-
-            //builder.WebHost.ConfigureKestrel(options =>
-            //{
-            //    options.ListenAnyIP(7188); 
-            //});
             builder.Services.AddEndpointsApiExplorer();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            //builder.Services.AddOpenApi();
-
             var app = builder.Build();
-            var fileServerPath = builder.Configuration["FileStorage:RootPath"];
-            if (!string.IsNullOrWhiteSpace(fileServerPath) && Directory.Exists(fileServerPath))
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    FileProvider = new PhysicalFileProvider(fileServerPath),
-                    RequestPath = "/files",
-                     OnPrepareResponse = ctx =>
-                     {
-                         // Thêm CORS headers cho static files (PDF,...)
-                         //ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:5173");
-                         //ctx.Context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, OPTIONS");
-                         //ctx.Context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type");
-                     }
-                });
-            }
-
-            if (app.Environment.IsDevelopment())
-            {
-                //app.MapOpenApi();
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ThuVienPtit API v1");
-                    c.RoutePrefix = string.Empty;
-                });
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ThuVienPtit API v1");
+                c.RoutePrefix = string.Empty;
+            });
             //pipeline
             app.UseMiddleware<ExceptionMiddleware>();
-            //app.UseHttpsRedirection();
-            app.UseCors("AllowFrontend");
+            app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
